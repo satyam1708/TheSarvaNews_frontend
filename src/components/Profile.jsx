@@ -14,6 +14,10 @@ const Profile = () => {
   // Use the imported local image as avatar
   const avatarUrl = avatarImage;
 
+  // Use environment variable or fallback to localhost
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+
   useEffect(() => {
     if (!user || !token) {
       navigate('/login');
@@ -24,7 +28,7 @@ const Profile = () => {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('http://localhost:5000/api/bookmarks', {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           headers: {
             Authorization: `Bearer ${token}`,
           },
@@ -45,7 +49,7 @@ const Profile = () => {
     };
 
     fetchBookmarks();
-  }, [user, token, navigate]);
+  }, [user, token, navigate, API_BASE_URL]);
 
   if (!user) return null;
 

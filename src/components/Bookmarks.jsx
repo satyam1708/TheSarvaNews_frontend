@@ -1,6 +1,9 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { AuthContext } from '../context/AuthContext';
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+
 const Bookmarks = () => {
   const { user, token } = useContext(AuthContext);
   const [bookmarks, setBookmarks] = useState([]);
@@ -11,7 +14,6 @@ const Bookmarks = () => {
   const [newsLoading, setNewsLoading] = useState(false);
   const [newsError, setNewsError] = useState('');
 
-  // Fetch bookmarks from backend
   useEffect(() => {
     if (!user) return;
 
@@ -19,7 +21,7 @@ const Bookmarks = () => {
       setLoading(true);
       setError('');
       try {
-        const res = await fetch('http://localhost:5000/api/bookmarks', {
+        const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
           headers: {
             Authorization: `Bearer ${token || user.token}`,
           },
@@ -39,7 +41,6 @@ const Bookmarks = () => {
     fetchBookmarks();
   }, [user, token]);
 
-  // Fetch latest news via backend
   useEffect(() => {
     if (!user) return;
 
@@ -47,8 +48,9 @@ const Bookmarks = () => {
       setNewsLoading(true);
       setNewsError('');
       try {
-        // Request your own backend's /api/news route
-        const res = await fetch('http://localhost:5000/api/news?mode=top-headlines&lang=en&country=us&max=5');
+        const res = await fetch(
+          `${API_BASE_URL}/api/news?mode=top-headlines&lang=en&country=us&max=5`
+        );
 
         if (!res.ok) throw new Error('Failed to fetch latest news');
 
@@ -64,11 +66,10 @@ const Bookmarks = () => {
     fetchNews();
   }, [user]);
 
-  // Add bookmark
   const handleAddBookmark = async (article) => {
     setError('');
     try {
-      const res = await fetch('http://localhost:5000/api/bookmarks', {
+      const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
@@ -89,11 +90,10 @@ const Bookmarks = () => {
         throw new Error(errData.message || 'Failed to add bookmark');
       }
 
-      // Optimistically add bookmark locally
       setBookmarks((prev) => [
         ...prev,
         {
-          id: article.url, // using url as id fallback
+          id: article.url,
           url: article.url,
           title: article.title,
           description: article.description || '',
@@ -107,13 +107,12 @@ const Bookmarks = () => {
     }
   };
 
-  // Remove bookmark
   const handleDelete = async (url) => {
     if (!window.confirm('Are you sure you want to remove this bookmark?')) return;
 
     setError('');
     try {
-      const res = await fetch('http://localhost:5000/api/bookmarks', {
+      const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         method: 'DELETE',
         headers: {
           'Content-Type': 'application/json',
@@ -178,7 +177,6 @@ const Bookmarks = () => {
         </div>
       )}
 
-      {/* Latest news section */}
       <h2 className="text-2xl font-semibold mb-6 text-orange-600">Latest News</h2>
 
       {newsError && (
@@ -192,7 +190,7 @@ const Bookmarks = () => {
       ) : (
         <div className="grid gap-4">
           {news.map((article) => {
-            const isBookmarked = bookmarks.some(b => b.url === article.url);
+            const isBookmarked = bookmarks.some((b) => b.url === article.url);
             return (
               <div
                 key={article.url}

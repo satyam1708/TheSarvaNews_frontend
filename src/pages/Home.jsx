@@ -2,6 +2,8 @@ import React, { useEffect, useState } from 'react';
 import TheSarvaNewsHeader from './TheSarvaNewsHeader';
 
 export default function Home() {
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
   const today = new Date().toISOString().split('T')[0];
 
   const [news, setNews] = useState([]);
@@ -23,7 +25,7 @@ export default function Home() {
       setError('');
 
       try {
-        let url = new URL('http://localhost:5000/api/news');
+        let url = new URL(`${API_BASE_URL}/api/news`);
 
         if (mode === 'top-headlines') {
           url.searchParams.append('mode', 'top-headlines');
@@ -57,13 +59,13 @@ export default function Home() {
     };
 
     fetchNews();
-  }, [selectedDate, topic, mode]);
+  }, [selectedDate, topic, mode, API_BASE_URL]);
 
   useEffect(() => {
     const token = localStorage.getItem('token');
     if (!token) return;
 
-    fetch('http://localhost:5000/api/bookmarks', {
+    fetch(`${API_BASE_URL}/api/bookmarks`, {
       headers: {
         Authorization: `Bearer ${token}`,
       },
@@ -76,7 +78,7 @@ export default function Home() {
       .catch(err => {
         console.error('Failed to fetch bookmarks:', err);
       });
-  }, []);
+  }, [API_BASE_URL]);
 
   const openModal = (article) => {
     setActiveArticle(article);
@@ -98,7 +100,6 @@ export default function Home() {
   const toggleBookmark = async (article) => {
     const token = localStorage.getItem('token');
     if (!token) {
-      // Show login prompt inside modal instead of alert
       setShowLoginPrompt(true);
       return;
     }
@@ -107,7 +108,7 @@ export default function Home() {
 
     try {
       if (isBookmarked) {
-        await fetch(`http://localhost:5000/api/bookmarks`, {
+        await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: 'DELETE',
           headers: {
             'Content-Type': 'application/json',
@@ -121,7 +122,7 @@ export default function Home() {
           return newSet;
         });
       } else {
-        await fetch(`http://localhost:5000/api/bookmarks`, {
+        await fetch(`${API_BASE_URL}/api/bookmarks`, {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',

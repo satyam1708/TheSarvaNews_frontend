@@ -9,13 +9,17 @@ function NewsList() {
   const [bookmarkingIds, setBookmarkingIds] = useState(new Set());
   const { user, token } = useContext(AuthContext);
 
+  // Use environment variable for API base URL or fallback
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+
   useEffect(() => {
     const fetchNews = async () => {
       setLoading(true);
       setError('');
       try {
         const res = await axios.get(
-          'http://localhost:5000/api/news?mode=top-headlines&category=general&language=en&country=in'
+          `${API_BASE_URL}/api/news?mode=top-headlines&category=general&language=en&country=in`
         );
         setArticles(res.data.articles || []);
       } catch (err) {
@@ -26,7 +30,7 @@ function NewsList() {
     };
 
     fetchNews();
-  }, []);
+  }, [API_BASE_URL]);
 
   const handleBookmark = async (article) => {
     if (!user) {
@@ -37,7 +41,7 @@ function NewsList() {
     setBookmarkingIds((prev) => new Set(prev).add(article.url));
     try {
       await axios.post(
-        'http://localhost:5000/api/bookmarks',
+        `${API_BASE_URL}/api/bookmarks`,
         {
           title: article.title,
           url: article.url,

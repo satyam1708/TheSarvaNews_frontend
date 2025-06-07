@@ -7,6 +7,10 @@ const NewsCard = ({ article }) => {
   const [error, setError] = useState('');
   const [loading, setLoading] = useState(false);
 
+  // Get API base URL from env or fallback to localhost
+  const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
+
+
   const handleBookmark = async () => {
     if (!user) {
       setError('Please login to bookmark articles.');
@@ -16,7 +20,7 @@ const NewsCard = ({ article }) => {
     setLoading(true);
 
     try {
-      const res = await fetch('http://localhost:5000/api/bookmarks', {
+      const res = await fetch(`${API_BASE_URL}/api/bookmarks`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
