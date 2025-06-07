@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import TheSarvaNewsHeader from './TheSarvaNewsHeader';
-
+import { Helmet } from 'react-helmet';
 export default function Home() {
   const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:5000';
 
@@ -152,6 +152,13 @@ export default function Home() {
 
   return (
     <div className="p-4">
+      <Helmet>
+        <title>TheSarvaNews — All News, One Place</title>
+        <meta
+          name="description"
+          content="TheSarvaNews - All News, One Place. Get the latest headlines and stories from around the world."
+        />
+      </Helmet>
       <TheSarvaNewsHeader />
 
       <div className="flex flex-col md:flex-row items-center justify-center gap-4 mb-6">
